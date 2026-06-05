@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="VetPMS - A modern, high-fidelity Veterinary Practice Management System dashboard and integration mock interface.">
+  <title>VetPMS - Veterinary Practice Management System</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+      <div>
+        <div class="logo-container">
+          <div class="logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          </div>
+          <span class="logo-text">VetPMS</span>
+        </div>
+        
+        <nav class="nav-links">
+          <a class="nav-item active" id="nav-whiteboard">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            </svg>
+            Hospital Whiteboard
+          </a>
+          <a class="nav-item" id="nav-ehr">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            Patient EHR & SOAP
+          </a>
+          <a class="nav-item" id="nav-imaging">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            DICOM Imaging PACS
+          </a>
+          <a class="nav-item" id="nav-labs">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+            </svg>
+            IDEXX/Antech Labs
+          </a>
+          <a class="nav-item" id="nav-substances">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            Substance Ledger
+          </a>
+          <a class="nav-item" id="nav-billing">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Billing & Insurance
+          </a>
+        </nav>
+      </div>
+
+      <!-- User footer inside sidebar -->
+      <div class="user-profile">
+        <div class="avatar" id="active-user-avatar">JP</div>
+        <div class="user-info">
+          <span class="username" id="active-user-name">Dr. Jeffery Powell</span>
+          <span class="user-role" id="active-user-role">Lead Veterinarian</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN APP CONTENT -->
+    <main class="main-content">
+      
+      <!-- Top header bar -->
+      <header class="top-header glass">
+        <div class="page-title-area">
+          <h2 id="current-view-title">Hospital Whiteboard</h2>
+        </div>
+        <div class="system-status-pills">
+          <div class="status-pill">
+            <div class="status-dot simulated"></div>
+            <span>PACS Service: Mock-Store (PORT: 104)</span>
+          </div>
+          <div class="status-pill">
+            <div class="status-dot online"></div>
+            <span>Stripe/Clover: Connected</span>
+          </div>
+          <div class="status-pill">
+            <div class="status-dot online"></div>
+            <span>Trupanion direct claim: Live</span>
+          </div>
+          <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" id="btn-quick-checkin">+ Check-In</button>
+        </div>
+      </header>
+
+      <!-- 1. HOSPITAL WHITEBOARD / FLOWSHEET -->
+      <section class="view-panel active" id="view-whiteboard">
+        <div class="whiteboard-container" id="whiteboard-grid">
+          <!-- Dynamically populated columns (Triage, Ward, Diagnostics, Surgery, Recovery, Discharge) -->
+        </div>
+      </section>
+
+      <!-- 2. EHR & SOAP MEDICAL NOTES -->
+      <section class="view-panel" id="view-ehr">
+        <div class="ehr-container">
+          <aside class="patient-selector-pane">
+            <input type="text" class="search-input" id="patient-search" placeholder="Search patient name, breed...">
+            <div class="patient-list" id="ehr-patient-list">
+              <!-- Dynamically populated patient selection items -->
+            </div>
+          </aside>
+          
+          <div class="soap-note-container" id="ehr-active-record">
+            <!-- Dynamically populated patient details panel + active SOAP inputs -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. DICOM PACS VIEWPORT & IMAGING WORKLIST -->
+      <section class="view-panel" id="view-imaging">
+        <div class="pacs-container">
+          <aside class="pacs-sidebar glass-card">
+            <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--purple);">Modality Worklist</h3>
+            <div class="mwl-list" id="pacs-mwl-list">
+              <!-- Imaging orders waiting in MWL queue -->
+            </div>
+          </aside>
+          
+          <div class="dicom-viewport-frame" id="pacs-viewport">
+            <img id="dicom-viewer-image" class="dicom-canvas" src="" alt="DICOM Radiograph Output" style="display:none;">
+            <div class="terminal-simulator" id="pacs-waiting-screen" style="width: 80%; height: auto; min-height: 200px;">
+              <div class="terminal-status" id="mwl-sim-status">PACS: Idle</div>
+              <div class="terminal-sub" id="mwl-sim-sub">Order a radiograph in SOAP notes or choose a pending MWL order to acquire.</div>
+              <button class="btn btn-purple" id="btn-trigger-xray-acquisition" style="display:none;">Simulate X-Ray Acquisition</button>
+            </div>
+            <!-- Overlay diagnostics labels -->
+            <div class="dicom-overlay top-left" id="overlay-patient-left">PATIENT: N/A</div>
+            <div class="dicom-overlay top-right" id="overlay-study-right">STUDY UID: N/A</div>
+            <div class="dicom-overlay bottom-left" id="overlay-clinic-left">VETPMS MEDICAL PACS<br>CALIPER: OFF</div>
+            <div class="dicom-overlay bottom-right" id="overlay-stats-right">16-bit Grayscale<br>W/L: Auto</div>
+          </div>
+          
+          <aside class="pacs-sidebar glass-card">
+            <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 16px;">PACS Adjustments</h3>
+            <div class="pacs-controls">
+              <div class="slider-group">
+                <label>Window Level (Brightness)</label>
+                <input type="range" id="slider-pacs-brightness" min="50" max="150" value="100">
+              </div>
+              <div class="slider-group">
+                <label>Window Width (Contrast)</label>
+                <input type="range" id="slider-pacs-contrast" min="50" max="200" value="100">
+              </div>
+              <div class="slider-group" style="margin-top: 12px;">
+                <label style="font-weight:600; color:#fff;">Caliper Tool (VHS Measure)</label>
+                <button class="btn btn-secondary" id="btn-toggle-caliper" style="justify-content:center;">Enable Vertebral Heart Scale</button>
+              </div>
+              <div class="slider-group" style="margin-top: 12px;">
+                <button class="btn btn-secondary" id="btn-invert-grayscale" style="justify-content:center;">Invert Grayscale (Bone/Soft)</button>
+              </div>
+              <div class="glass-card" style="margin-top: auto; padding: 12px; font-size: 11px; background: rgba(0,0,0,0.15);">
+                <span style="font-weight: 700; color: var(--purple);">C-STORE Protocol</span><br>
+                This viewer emulates C-STORE SCP receiving simulated dcm chunks directly over standard ports.
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- 4. DIAGNOSTICS & LABS -->
+      <section class="view-panel" id="view-labs">
+        <div class="labs-container">
+          <aside class="patient-selector-pane">
+            <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--info);">Lab Orders</h3>
+            <div class="patient-list" id="labs-order-list">
+              <!-- Dynamically populated lab orders -->
+            </div>
+          </aside>
+          
+          <div class="glass-card" style="flex-grow: 1; display: flex; flex-direction: column;" id="labs-results-view">
+            <div class="terminal-simulator" id="labs-waiting-screen" style="height: 350px;">
+              <div class="terminal-status" id="labs-sim-status">Diagnostics Engine: Idle</div>
+              <div class="terminal-sub">Select a laboratory order to view reports or trigger analyzer simulation.</div>
+            </div>
+            <div id="labs-report-panel" style="display:none;">
+              <!-- Dynamically rendered biochemistry reports -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. CONTROLLED SUBSTANCE LEDGER -->
+      <section class="view-panel" id="view-substances">
+        <div class="vault-header">
+          <div>
+            <h3 style="font-size: 18px; font-weight: 700;">DEA Controlled Substance Vault</h3>
+            <p style="font-size: 12px; color: var(--text-secondary);">Strict double-sign verification logs in compliance with state veterinary licensing boards.</p>
+          </div>
+          <button class="btn btn-purple" id="btn-record-vault-draw">Withdraw Substance</button>
+        </div>
+        
+        <div class="inventory-grid" id="vault-inventory-cards">
+          <!-- Dynamic inventory bottle levels -->
+        </div>
+        
+        <div class="audit-table-container">
+          <table class="audit-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Drug Name</th>
+                <th>Patient</th>
+                <th>Vet Signed</th>
+                <th>Witness Signed</th>
+                <th>Dose Vol (mL)</th>
+                <th>Wasted (mL)</th>
+                <th>Vault Balance</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody id="substance-vault-ledger-rows">
+              <!-- Vault ledger entries -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 6. BILLING & INSURANCE CLAIMS -->
+      <section class="view-panel" id="view-billing">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <!-- Left side invoice compiler -->
+          <div class="glass-card" style="display: flex; flex-direction: column; gap: 16px;">
+            <h3 style="font-size: 16px; font-weight: 700; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px;">Client Check-Out Invoice</h3>
+            
+            <div style="font-size: 12px; color: var(--text-secondary);" id="billing-patient-meta">
+              Select an active hospital patient to compile invoice charges.
+            </div>
+            
+            <div class="invoice-summary" id="billing-invoice-box">
+              <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 20px;">
+                No patient invoice loaded.
+              </div>
+            </div>
+            
+            <div style="display: flex; gap: 12px;" id="billing-action-buttons">
+              <button class="btn" style="flex-grow:1; display:none;" id="btn-submit-insurance-claim">Submit Trupanion claim</button>
+              <button class="btn btn-secondary" style="flex-grow:1; display:none;" id="btn-trigger-payment-terminal">Process Card Payment</button>
+            </div>
+          </div>
+          
+          <!-- Right side integrations dashboard (Insurance/Terminal) -->
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div class="glass-card" style="flex-grow: 1;">
+              <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--primary);">Stripe / Clover Terminal Mock</h4>
+              <div class="terminal-simulator" id="billing-terminal-display">
+                <div class="terminal-indicator-light" style="background-color: var(--text-muted); animation: none;" id="terminal-light"></div>
+                <div class="terminal-status" id="terminal-status-text">Terminal: Disconnected</div>
+                <div class="terminal-sub" id="terminal-sub-text">Awaiting PMS command payload...</div>
+              </div>
+            </div>
+            
+            <div class="glass-card">
+              <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--success);">Direct Claims Registry (Trupanion API)</h4>
+              <div class="claims-list" id="billing-claims-list">
+                <div style="text-align: center; font-size: 12px; color: var(--text-muted); padding: 12px;">
+                  No claims submitted today.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- MODALS -->
+  
+  <!-- 1. Patient Quick Check-in Dialog -->
+  <dialog class="modal-overlay" id="modal-checkin">
+    <div class="modal-card glass-card">
+      <header class="modal-header">
+        <h3 class="modal-title">New Patient Admission</h3>
+        <button class="modal-close" id="btn-close-checkin-modal">✕</button>
+      </header>
+      <form class="modal-body" id="form-patient-checkin">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="slider-group">
+            <label>Patient Name*</label>
+            <input type="text" class="search-input" id="checkin-pet-name" required placeholder="e.g. Oliver">
+          </div>
+          <div class="slider-group">
+            <label>Species*</label>
+            <select class="search-input" id="checkin-pet-species" required style="background: rgba(0,0,0,0.5);">
+              <option value="Canine">Canine (Dog)</option>
+              <option value="Feline">Feline (Cat)</option>
+              <option value="Equine">Equine (Horse)</option>
+              <option value="Exotic">Exotic (Avian/Reptile)</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="slider-group">
+            <label>Breed</label>
+            <input type="text" class="search-input" id="checkin-pet-breed" placeholder="e.g. Siamese">
+          </div>
+          <div class="slider-group">
+            <label>Triage Urgency</label>
+            <select class="search-input" id="checkin-triage" style="background: rgba(0,0,0,0.5);">
+              <option value="Standard">Standard Outpatient (Green)</option>
+              <option value="Urgent">Urgent / Treatment Sheet (Yellow)</option>
+              <option value="Critical">Critical Emergency (Red)</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="slider-group">
+            <label>Owner (Client Name)*</label>
+            <input type="text" class="search-input" id="checkin-owner" required placeholder="e.g. Sarah Connor">
+          </div>
+          <div class="slider-group">
+            <label>Weight (kg)</label>
+            <input type="number" step="0.1" class="search-input" id="checkin-weight" placeholder="e.g. 4.2">
+          </div>
+        </div>
+        <div class="slider-group">
+          <label>Allergies / Aggression Warnings</label>
+          <input type="text" class="search-input" id="checkin-warnings" placeholder="e.g. Allergy: Penicillin; Will Hiss/Scratch">
+        </div>
+        <div style="display: flex; gap: 12px; margin-top: 10px;">
+          <button type="submit" class="btn" style="width:100%; justify-content:center;">Admit & Check In</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- 2. Controlled Substances Double-Witness Signature Dialog -->
+  <dialog class="modal-overlay" id="modal-substance-draw">
+    <div class="modal-card glass-card">
+      <header class="modal-header">
+        <h3 class="modal-title">Witness Signature Required</h3>
+        <button class="modal-close" id="btn-close-substance-modal">✕</button>
+      </header>
+      <form class="modal-body" id="form-substance-draw">
+        <div class="slider-group">
+          <label>Select Drug</label>
+          <select class="search-input" id="draw-drug-select" style="background: rgba(0,0,0,0.5);"></select>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="slider-group">
+            <label>Draw Dose (mL)</label>
+            <input type="number" step="0.1" class="search-input" id="draw-amount" required placeholder="e.g. 1.2">
+          </div>
+          <div class="slider-group">
+            <label>Wasted (mL)</label>
+            <input type="number" step="0.1" class="search-input" id="draw-wasted" placeholder="0.0" value="0.0">
+          </div>
+        </div>
+
+        <div class="slider-group">
+          <label>Patient Relationship</label>
+          <select class="search-input" id="draw-patient-select" style="background: rgba(0,0,0,0.5);"></select>
+        </div>
+
+        <div class="slider-group">
+          <label>Indication / Clinical Reason</label>
+          <input type="text" class="search-input" id="draw-reason" required placeholder="e.g. Pre-op Sedation">
+        </div>
+
+        <div class="witness-auth-box">
+          <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--warning); letter-spacing: 0.5px;">DEA Double Witness Login</span>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="slider-group">
+              <label>Drawing Veterinarian</label>
+              <select class="search-input" id="draw-vet-select" style="background: rgba(0,0,0,0.5); font-size:11px;">
+                <option value="Dr. Jeffery Powell">Dr. Jeffery Powell (DEA #P55912)</option>
+                <option value="Dr. Evelyn Vance">Dr. Evelyn Vance (DEA #V88129)</option>
+              </select>
+            </div>
+            <div class="slider-group">
+              <label>Veterinary Witness PIN</label>
+              <input type="password" class="search-input" id="draw-witness-pin" required placeholder="4-digit PIN" style="font-size:11px;">
+            </div>
+          </div>
+          <span style="font-size: 10px; color: var(--text-muted);">For verification, witness staff PINs are: Vet Techs (1234), Admin (0000).</span>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 10px;">
+          <button type="submit" class="btn btn-purple" style="width:100%; justify-content:center;">Sign & Dispense Drug</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- TOAST NOTIFICATION STACK -->
+  <div class="notifications-layer" id="toast-stack">
+    <!-- Dynamic popups will appear here -->
+  </div>
+
+  <!-- APPLICATION SCRIPTS -->
+  <script src="modules/whiteboard.js"></script>
+  <script src="modules/medicalRecords.js"></script>
+  <script src="modules/imaging.js"></script>
+  <script src="modules/laboratories.js"></script>
+  <script src="modules/substances.js"></script>
+  <script src="modules/billing.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
