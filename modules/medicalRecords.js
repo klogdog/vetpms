@@ -3,9 +3,9 @@
 
 class VetPMSMedicalRecords {
   constructor() {
-    this.patientSearch = document.getElementById("patient-search");
-    this.patientListContainer = document.getElementById("ehr-patient-list");
-    this.activeRecordContainer = document.getElementById("ehr-active-record");
+    this.patientSearch = document.getElementById('patient-search');
+    this.patientListContainer = document.getElementById('ehr-patient-list');
+    this.activeRecordContainer = document.getElementById('ehr-active-record');
 
     this.activeTooth = null;
     this.toothPathologies = {};
@@ -16,11 +16,11 @@ class VetPMSMedicalRecords {
 
   // Inject printable Rabies certificate modal
   injectRabiesModalToDOM() {
-    if (document.getElementById("modal-rabies-certificate")) return;
+    if (document.getElementById('modal-rabies-certificate')) return;
 
-    const modal = document.createElement("dialog");
-    modal.className = "modal-overlay";
-    modal.id = "modal-rabies-certificate";
+    const modal = document.createElement('dialog');
+    modal.className = 'modal-overlay';
+    modal.id = 'modal-rabies-certificate';
     modal.innerHTML = `
       <div class="modal-card glass-card" style="max-width: 650px; background:#fff; color:#000; border-color:#d1d5db; box-shadow:0 20px 25px -5px rgba(0,0,0,0.5);">
         <header class="modal-header" style="border-bottom: 2px solid #000; padding-bottom:8px; margin-bottom:12px;">
@@ -36,14 +36,14 @@ class VetPMSMedicalRecords {
     `;
     document.body.appendChild(modal);
 
-    document.getElementById("btn-close-rabies-modal").addEventListener("click", () => {
-      modal.style.display = "none";
+    document.getElementById('btn-close-rabies-modal').addEventListener('click', () => {
+      modal.style.display = 'none';
     });
   }
 
   initEventListeners() {
     if (this.patientSearch) {
-      this.patientSearch.addEventListener("input", () => this.renderPatientList());
+      this.patientSearch.addEventListener('input', () => this.renderPatientList());
     }
   }
 
@@ -54,14 +54,13 @@ class VetPMSMedicalRecords {
 
   renderPatientList() {
     if (!this.patientListContainer) return;
-    this.patientListContainer.innerHTML = "";
+    this.patientListContainer.innerHTML = '';
 
-    const query = this.patientSearch ? this.patientSearch.value.toLowerCase() : "";
+    const query = this.patientSearch ? this.patientSearch.value.toLowerCase() : '';
     const patients = window.vetApp.state.animals;
 
-    const filtered = patients.filter(p => 
-      p.name.toLowerCase().includes(query) || 
-      p.breed.toLowerCase().includes(query)
+    const filtered = patients.filter(
+      (p) => p.name.toLowerCase().includes(query) || p.breed.toLowerCase().includes(query)
     );
 
     if (filtered.length === 0) {
@@ -69,11 +68,11 @@ class VetPMSMedicalRecords {
       return;
     }
 
-    filtered.forEach(p => {
-      const item = document.createElement("div");
-      item.className = `patient-selector-item ${p.id === window.vetApp.activePatientId ? "active" : ""}`;
-      
-      let speciesEmoji = p.species === "Feline" ? "🐱" : "🐶";
+    filtered.forEach((p) => {
+      const item = document.createElement('div');
+      item.className = `patient-selector-item ${p.id === window.vetApp.activePatientId ? 'active' : ''}`;
+
+      let speciesEmoji = p.species === 'Feline' ? '🐱' : '🐶';
 
       item.innerHTML = `
         <div class="avatar-species">${speciesEmoji}</div>
@@ -83,7 +82,7 @@ class VetPMSMedicalRecords {
         </div>
       `;
 
-      item.addEventListener("click", () => {
+      item.addEventListener('click', () => {
         window.vetApp.activePatientId = p.id;
         this.render();
       });
@@ -102,69 +101,88 @@ class VetPMSMedicalRecords {
 
     // Resolve Shared Custody percentages
     const ownerships = window.vetApp.getOwnershipDetails(p.id);
-    let ownershipHTML = ownerships.map(o => `
+    let ownershipHTML = ownerships
+      .map(
+        (o) => `
       <div style="font-size:11px; color:var(--text-secondary); display:flex; justify-content:between; background:rgba(255,255,255,0.02); border:1px solid var(--glass-border); padding:6px 12px; border-radius:6px;">
         <span>👤 <b>${o.ownerName}</b> (${o.role})</span>
-        <span>Custody: <b>${o.share}%</b> • Bill: <b>${o.billing?"Yes":"No"}</b> • Comms: <b>${o.communication?"Yes":"No"}</b> • Consent: <b>${o.consent?"Yes":"No"}</b></span>
+        <span>Custody: <b>${o.share}%</b> • Bill: <b>${o.billing ? 'Yes' : 'No'}</b> • Comms: <b>${o.communication ? 'Yes' : 'No'}</b> • Consent: <b>${o.consent ? 'Yes' : 'No'}</b></span>
       </div>
-    `).join("");
+    `
+      )
+      .join('');
 
     // Resolve weights time-series & Age alert (>30 days)
     const weights = window.vetApp.getWeightHistory(p.id);
     const latestWeightObs = window.vetApp.getLatestWeight(p.id);
-    
-    let weightWarningClass = "";
-    let weightWarningText = "";
+
+    let weightWarningClass = '';
+    let weightWarningText = '';
     if (latestWeightObs.date) {
       const diffTime = Math.abs(new Date() - new Date(latestWeightObs.date));
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       if (diffDays > 30) {
-        weightWarningClass = "border-color: var(--danger); background: rgba(239, 68, 68, 0.08);";
+        weightWarningClass = 'border-color: var(--danger); background: rgba(239, 68, 68, 0.08);';
         weightWarningText = `<span style="color:var(--danger); font-size:10px; font-weight:700; display:block; margin-top:4px;">⚠️ WEIGHT OBSERVATION OLDER THAN 30 DAYS (${diffDays}d)</span>`;
       }
     }
 
     // Meeh Formula BSA
-    const kFactor = p.species === "Feline" ? 10.0 : 10.1;
-    const bsa = latestWeightObs.kg > 0 ? (kFactor * Math.pow(latestWeightObs.kg, 2/3) / 100).toFixed(3) : 0.000;
+    const kFactor = p.species === 'Feline' ? 10.0 : 10.1;
+    const bsa =
+      latestWeightObs.kg > 0
+        ? ((kFactor * Math.pow(latestWeightObs.kg, 2 / 3)) / 100).toFixed(3)
+        : 0.0;
 
     // Warning flags list
-    let warningHTML = "";
+    let warningHTML = '';
     if (p.warnings && p.warnings.length > 0) {
       warningHTML = `
         <div class="warning-banner-stack" style="display:flex; flex-direction:column; gap:6px;">
-          ${p.warnings.map(w => `
+          ${p.warnings
+            .map(
+              (w) => `
             <div class="warning-badge" style="width:100%; display:flex; align-items:center; gap:8px; padding:10px 14px; font-size:12px; border-radius:8px;">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
               ${w}
             </div>
-          `).join("")}
+          `
+            )
+            .join('')}
         </div>
       `;
     }
 
     // Active diagnostic orders block
-    let ordersListHTML = "";
-    const activeImaging = window.vetApp.state.imagingOrders.filter(io => io.patientId === p.id);
-    const activeLabs = window.vetApp.state.labOrders.filter(lo => lo.patientId === p.id);
+    let ordersListHTML = '';
+    const activeImaging = window.vetApp.state.imagingOrders.filter((io) => io.patientId === p.id);
+    const activeLabs = window.vetApp.state.labOrders.filter((lo) => lo.patientId === p.id);
 
     if (activeImaging.length > 0 || activeLabs.length > 0) {
       ordersListHTML = `
         <div class="glass-card" style="padding:16px;">
           <h4 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary);">Active Diagnostic Orders</h4>
           <div style="display:flex; flex-direction:column; gap:8px;">
-            ${activeImaging.map(o => `
+            ${activeImaging
+              .map(
+                (o) => `
               <div style="display:flex; justify-content:between; align-items:center; font-size:12px; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom:6px;">
                 <span>📷 Radiograph: <b>${o.studyType}</b></span>
                 <span class="btn btn-secondary" style="padding:2px 8px; font-size:10px; border-radius:4px;" onclick="window.vetApp.switchView('imaging')">${o.status}</span>
               </div>
-            `).join("")}
-            ${activeLabs.map(o => `
+            `
+              )
+              .join('')}
+            ${activeLabs
+              .map(
+                (o) => `
               <div style="display:flex; justify-content:between; align-items:center; font-size:12px; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom:6px;">
                 <span>🧪 Lab Panel: <b>${o.panelName}</b></span>
                 <span class="btn btn-secondary" style="padding:2px 8px; font-size:10px; border-radius:4px;" onclick="window.vetApp.switchView('labs')">${o.status}</span>
               </div>
-            `).join("")}
+            `
+              )
+              .join('')}
           </div>
         </div>
       `;
@@ -176,7 +194,7 @@ class VetPMSMedicalRecords {
     this.activeRecordContainer.innerHTML = `
       <header class="ehr-header">
         <div class="patient-profile-card">
-          <div class="patient-large-avatar">${p.species === "Feline" ? "🐱" : "🐶"}</div>
+          <div class="patient-large-avatar">${p.species === 'Feline' ? '🐱' : '🐶'}</div>
           <div style="display:flex; flex-direction:column; gap:4px;">
             <div style="display:flex; align-items:center; gap:10px;">
               <h3 style="font-size:20px; font-weight:800; color:#fff;">${p.name}</h3>
@@ -212,10 +230,10 @@ class VetPMSMedicalRecords {
         <div class="slider-group">
           <label>9-pt BCS / MCS</label>
           <select class="search-input" id="vitals-bcs" style="background: rgba(0,0,0,0.5); font-size:11px;">
-            <option value="5/9" ${p.vitals.bcs.includes("5/9")?"selected":""}>5/9 Ideal</option>
-            <option value="3/9" ${p.vitals.bcs.includes("3/9")?"selected":""}>3/9 Underweight</option>
-            <option value="7/9" ${p.vitals.bcs.includes("7/9")?"selected":""}>7/9 Overweight</option>
-            <option value="9/9" ${p.vitals.bcs.includes("9/9")?"selected":""}>9/9 Obese</option>
+            <option value="5/9" ${p.vitals.bcs.includes('5/9') ? 'selected' : ''}>5/9 Ideal</option>
+            <option value="3/9" ${p.vitals.bcs.includes('3/9') ? 'selected' : ''}>3/9 Underweight</option>
+            <option value="7/9" ${p.vitals.bcs.includes('7/9') ? 'selected' : ''}>7/9 Overweight</option>
+            <option value="9/9" ${p.vitals.bcs.includes('9/9') ? 'selected' : ''}>9/9 Obese</option>
           </select>
         </div>
         <div class="slider-group">
@@ -331,31 +349,41 @@ class VetPMSMedicalRecords {
     `;
 
     // Rebind Dosing calculator default dose rate triggers
-    const drugSelect = document.getElementById("dose-drug-select");
-    const rateInput = document.getElementById("dose-rate-input");
-    
-    drugSelect.addEventListener("change", () => {
+    const drugSelect = document.getElementById('dose-drug-select');
+    const rateInput = document.getElementById('dose-rate-input');
+
+    drugSelect.addEventListener('change', () => {
       const rates = {
         Amoxicillin: 10.0,
         Meloxicam: 0.2,
-        Ivermectin: 300,  // mcg/kg
-        Buprenorphine: 0.02
+        Ivermectin: 300, // mcg/kg
+        Buprenorphine: 0.02,
       };
       rateInput.value = rates[drugSelect.value] || 1.0;
     });
 
     // Hook listeners
-    document.getElementById("btn-calc-dose").addEventListener("click", () => this.handleCalculateDose());
-    document.getElementById("btn-save-soap").addEventListener("click", () => this.handleSaveSOAP());
-    document.getElementById("btn-order-xray").addEventListener("click", () => this.handleOrderXRay());
-    document.getElementById("btn-order-labs").addEventListener("click", () => this.handleOrderLabs());
-    document.getElementById("btn-administer-drug").addEventListener("click", () => this.handleDrawSubstance());
-    document.getElementById("btn-print-rabies-cert").addEventListener("click", () => this.openRabiesCertificate(p));
-    
+    document
+      .getElementById('btn-calc-dose')
+      .addEventListener('click', () => this.handleCalculateDose());
+    document.getElementById('btn-save-soap').addEventListener('click', () => this.handleSaveSOAP());
+    document
+      .getElementById('btn-order-xray')
+      .addEventListener('click', () => this.handleOrderXRay());
+    document
+      .getElementById('btn-order-labs')
+      .addEventListener('click', () => this.handleOrderLabs());
+    document
+      .getElementById('btn-administer-drug')
+      .addEventListener('click', () => this.handleDrawSubstance());
+    document
+      .getElementById('btn-print-rabies-cert')
+      .addEventListener('click', () => this.openRabiesCertificate(p));
+
     // Bind tooth map clicks
-    const teethButtons = this.activeRecordContainer.querySelectorAll(".triadan-tooth-btn");
-    teethButtons.forEach(btn => {
-      btn.addEventListener("click", () => this.openDentalEditor(btn.getAttribute("data-tooth")));
+    const teethButtons = this.activeRecordContainer.querySelectorAll('.triadan-tooth-btn');
+    teethButtons.forEach((btn) => {
+      btn.addEventListener('click', () => this.openDentalEditor(btn.getAttribute('data-tooth')));
     });
   }
 
@@ -364,16 +392,16 @@ class VetPMSMedicalRecords {
     const p = window.vetApp.getActivePatient();
     if (!p) return;
 
-    const drug = document.getElementById("dose-drug-select").value;
-    const rate = parseFloat(document.getElementById("dose-rate-input").value);
+    const drug = document.getElementById('dose-drug-select').value;
+    const rate = parseFloat(document.getElementById('dose-rate-input').value);
     const weight = window.vetApp.getLatestWeight(p.id).kg;
 
-    const resultsBox = document.getElementById("dose-calculator-result");
-    resultsBox.style.display = "block";
+    const resultsBox = document.getElementById('dose-calculator-result');
+    resultsBox.style.display = 'block';
 
     // Check Stale Weight Warning
     const latestWeightObs = window.vetApp.getLatestWeight(p.id);
-    let staleWeightWarning = "";
+    let staleWeightWarning = '';
     if (latestWeightObs.date) {
       const diffTime = Math.abs(new Date() - new Date(latestWeightObs.date));
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -383,68 +411,81 @@ class VetPMSMedicalRecords {
             ⚠️ CLINICAL ALERT: Weight observation is ${diffDays} days old (&gt;30d stale limit). Rounding errors may occur. Re-weigh animal!
           </div>
         `;
-        window.vetApp.showToast("Dosing warning: Weight is stale!", "warning");
+        window.vetApp.showToast('Dosing warning: Weight is stale!', 'warning');
       }
     }
 
     // Check 1: MDR1 Mutation Check
-    if (drug === "Ivermectin" && rate >= 150 && p.warnings.join(" ").includes("MDR1")) {
-      resultsBox.innerHTML = staleWeightWarning + `
+    if (drug === 'Ivermectin' && rate >= 150 && p.warnings.join(' ').includes('MDR1')) {
+      resultsBox.innerHTML =
+        staleWeightWarning +
+        `
         <span style="color:var(--danger); font-weight:700;">🚨 PLUMB'S DRUG BLOCK: MDR1 MUTATION AWARENESS</span><br>
         Patient <b>${p.name}</b> is homozygous affected for ABCB1/MDR1 mutation.<br>
         High-dose ivermectin (${rate}mcg/kg) violates secure barriers due to blood-brain barrier neurotoxicity limits.<br>
         <span style="color:var(--warning);">Max Safe Mange Dose: &lt; 50mcg/kg</span>. Administration aborted.
       `;
-      window.vetApp.showToast("MDR1 Pharmacogenomic contraindication fired!", "danger");
+      window.vetApp.showToast('MDR1 Pharmacogenomic contraindication fired!', 'danger');
       return;
     }
 
     // Check 2: Meloxicam NSAID Kidney Failure check
-    const activeLabs = window.vetApp.state.labOrders.find(o => o.patientId === p.id && o.status === "COMPLETED");
-    let hasAzotemia = p.warnings.join(" ").toLowerCase().includes("kidney") || 
-                      p.warnings.join(" ").toLowerCase().includes("azotem") || 
-                      p.soap.assessment.toLowerCase().includes("kidney") || 
-                      p.soap.assessment.toLowerCase().includes("ckd");
+    const activeLabs = window.vetApp.state.labOrders.find(
+      (o) => o.patientId === p.id && o.status === 'COMPLETED'
+    );
+    let hasAzotemia =
+      p.warnings.join(' ').toLowerCase().includes('kidney') ||
+      p.warnings.join(' ').toLowerCase().includes('azotem') ||
+      p.soap.assessment.toLowerCase().includes('kidney') ||
+      p.soap.assessment.toLowerCase().includes('ckd');
     if (activeLabs && activeLabs.results && activeLabs.results.CREA > 2.4) {
       hasAzotemia = true;
     }
 
-    if (drug === "Meloxicam" && hasAzotemia) {
-      resultsBox.innerHTML = staleWeightWarning + `
+    if (drug === 'Meloxicam' && hasAzotemia) {
+      resultsBox.innerHTML =
+        staleWeightWarning +
+        `
         <span style="color:var(--danger); font-weight:700;">🚨 PLUMB'S DRUG BLOCK: ACUTE RENAL CONTRAINDICATION</span><br>
         NSAID (Meloxicam) prohibited for ${p.name} due to documented **Azotemia / Renal Failure**.<br>
         CREA values violate safe glomerular perfusion margins. NSAID administration would accelerate nephrotoxicity.<br>
         <span style="color:var(--info);">Recommended alternative: Opioid pain relief (Buprenorphine)</span>.
       `;
-      window.vetApp.showToast("NSAID Kidney Failure block triggered!", "danger");
+      window.vetApp.showToast('NSAID Kidney Failure block triggered!', 'danger');
       return;
     }
 
     // Calculation calculations
     let volumeCalculated = 0.0;
-    
-    if (drug === "Amoxicillin") {
+
+    if (drug === 'Amoxicillin') {
       const mgNeeded = weight * rate;
       volumeCalculated = mgNeeded / 50.0;
-      resultsBox.innerHTML = staleWeightWarning + `
+      resultsBox.innerHTML =
+        staleWeightWarning +
+        `
         <span style="color:var(--success); font-weight:700;">✓ Amoxicillin Dosing Approved</span><br>
         Dose: <b>${mgNeeded.toFixed(1)} mg</b> at ${rate} mg/kg.<br>
         Volume to administer: <b style="font-size:14px; color:#fff;">${volumeCalculated.toFixed(2)} mL</b> (50mg/mL liquid suspension).
       `;
-    } else if (drug === "Meloxicam") {
+    } else if (drug === 'Meloxicam') {
       const mgNeeded = weight * rate;
       volumeCalculated = mgNeeded / 5.0;
-      resultsBox.innerHTML = staleWeightWarning + `
+      resultsBox.innerHTML =
+        staleWeightWarning +
+        `
         <span style="color:var(--success); font-weight:700;">✓ Meloxicam Dosing Approved</span><br>
         Dose: <b>${mgNeeded.toFixed(2)} mg</b> at ${rate} mg/kg.<br>
         Volume: <b style="font-size:14px; color:#fff;">${volumeCalculated.toFixed(2)} mL</b> (5mg/mL injectable).
       `;
-    } else if (drug === "Ivermectin") {
-      resultsBox.innerHTML = staleWeightWarning + `
+    } else if (drug === 'Ivermectin') {
+      resultsBox.innerHTML =
+        staleWeightWarning +
+        `
         <span style="color:var(--success); font-weight:700;">✓ Standard Ivermectin Heartworm Dose</span><br>
         Heartworm prophylaxis: 6 mcg/kg is safe. Administer 1 Standard monthly beef chew.
       `;
-    } else if (drug === "Buprenorphine") {
+    } else if (drug === 'Buprenorphine') {
       const mgNeeded = weight * rate;
       volumeCalculated = mgNeeded / 0.3;
       resultsBox.innerHTML = `
@@ -457,19 +498,22 @@ class VetPMSMedicalRecords {
 
   buildDentalTriadanChartHTML() {
     const renderQuad = (quadPrefix, range) => {
-      return range.map(t => {
-        const id = `${quadPrefix}${t.toString().padStart(2, "0")}`;
-        const hasPathology = this.toothPathologies[id];
-        let colorStyle = "background: rgba(255,255,255,0.04);";
-        if (hasPathology && hasPathology.pathology !== "Normal") {
-          colorStyle = "background: var(--danger); border-color: rgba(239,68,68,0.4); color: #000; font-weight:bold;";
-        }
-        return `
+      return range
+        .map((t) => {
+          const id = `${quadPrefix}${t.toString().padStart(2, '0')}`;
+          const hasPathology = this.toothPathologies[id];
+          let colorStyle = 'background: rgba(255,255,255,0.04);';
+          if (hasPathology && hasPathology.pathology !== 'Normal') {
+            colorStyle =
+              'background: var(--danger); border-color: rgba(239,68,68,0.4); color: #000; font-weight:bold;';
+          }
+          return `
           <button class="btn btn-secondary triadan-tooth-btn" data-tooth="${id}" style="padding:4px 6px; font-size:10px; min-width:32px; ${colorStyle}">
             ${id}
           </button>
         `;
-      }).join("");
+        })
+        .join('');
     };
 
     return `
@@ -503,50 +547,53 @@ class VetPMSMedicalRecords {
 
   openDentalEditor(toothId) {
     this.activeTooth = toothId;
-    
-    const panel = document.getElementById("dental-details-panel");
-    panel.style.display = "block";
-    
-    const label = document.getElementById("dental-tooth-label");
+
+    const panel = document.getElementById('dental-details-panel');
+    panel.style.display = 'block';
+
+    const label = document.getElementById('dental-tooth-label');
     label.innerText = `Modified Triadan: Tooth ${toothId}`;
 
-    const pathSelect = document.getElementById("dental-pathology");
-    const actionSelect = document.getElementById("dental-action");
+    const pathSelect = document.getElementById('dental-pathology');
+    const actionSelect = document.getElementById('dental-action');
 
     if (this.toothPathologies[toothId]) {
       pathSelect.value = this.toothPathologies[toothId].pathology;
       actionSelect.value = this.toothPathologies[toothId].action;
     } else {
-      pathSelect.value = "Normal";
-      actionSelect.value = "None";
+      pathSelect.value = 'Normal';
+      actionSelect.value = 'None';
     }
 
-    document.getElementById("btn-save-pathology").onclick = () => this.handleSaveToothPathology();
+    document.getElementById('btn-save-pathology').onclick = () => this.handleSaveToothPathology();
   }
 
   handleSaveToothPathology() {
     const toothId = this.activeTooth;
-    const pathSelect = document.getElementById("dental-pathology");
-    const actionSelect = document.getElementById("dental-action");
+    const pathSelect = document.getElementById('dental-pathology');
+    const actionSelect = document.getElementById('dental-action');
 
     this.toothPathologies[toothId] = {
       pathology: pathSelect.value,
-      action: actionSelect.value
+      action: actionSelect.value,
     };
 
     const p = window.vetApp.getActivePatient();
 
-    if (actionSelect.value === "Surgical Extraction (Invoiced)") {
+    if (actionSelect.value === 'Surgical Extraction (Invoiced)') {
       p.invoices.push({
         item: `Surgical Extraction: Triadan Tooth ${toothId} (Root Elevate)`,
-        price: 185.00,
-        category: "Dental Fee"
+        price: 185.0,
+        category: 'Dental Fee',
       });
-      window.vetApp.showToast(`Tooth ${toothId} extraction charge added to invoice.`, "success");
+      window.vetApp.showToast(`Tooth ${toothId} extraction charge added to invoice.`, 'success');
     }
 
-    window.vetApp.showToast(`Tooth ${toothId} records updated: <b>${pathSelect.value}</b>`, "success");
-    document.getElementById("dental-details-panel").style.display = "none";
+    window.vetApp.showToast(
+      `Tooth ${toothId} records updated: <b>${pathSelect.value}</b>`,
+      'success'
+    );
+    document.getElementById('dental-details-panel').style.display = 'none';
     this.render();
   }
 
@@ -554,17 +601,17 @@ class VetPMSMedicalRecords {
     const p = window.vetApp.getActivePatient();
     if (!p) return;
 
-    p.soap.subjective = document.getElementById("soap-s").value;
-    p.soap.objective = document.getElementById("soap-o").value;
-    p.soap.assessment = document.getElementById("soap-a").value;
-    p.soap.plan = document.getElementById("soap-p").value;
+    p.soap.subjective = document.getElementById('soap-s').value;
+    p.soap.objective = document.getElementById('soap-o').value;
+    p.soap.assessment = document.getElementById('soap-a').value;
+    p.soap.plan = document.getElementById('soap-p').value;
 
-    p.vitals.temp = parseFloat(document.getElementById("vitals-temp").value) || p.vitals.temp;
-    p.vitals.hr = parseInt(document.getElementById("vitals-hr").value) || p.vitals.hr;
-    p.vitals.rr = parseInt(document.getElementById("vitals-rr").value) || p.vitals.rr;
-    p.vitals.bcs = document.getElementById("vitals-bcs").value + " (AAHA/WSAVA 9-pt)";
+    p.vitals.temp = parseFloat(document.getElementById('vitals-temp').value) || p.vitals.temp;
+    p.vitals.hr = parseInt(document.getElementById('vitals-hr').value) || p.vitals.hr;
+    p.vitals.rr = parseInt(document.getElementById('vitals-rr').value) || p.vitals.rr;
+    p.vitals.bcs = document.getElementById('vitals-bcs').value + ' (AAHA/WSAVA 9-pt)';
 
-    window.vetApp.showToast(`Medical chart note saved for patient <b>${p.name}</b>`, "success");
+    window.vetApp.showToast(`Medical chart note saved for patient <b>${p.name}</b>`, 'success');
     this.render();
   }
 
@@ -572,7 +619,8 @@ class VetPMSMedicalRecords {
     const p = window.vetApp.getActivePatient();
     if (!p) return;
 
-    const studyType = p.species === "Canine" ? "Thoracic Radiograph (3 Views)" : "Abdominal Radiograph (2 Views)";
+    const studyType =
+      p.species === 'Canine' ? 'Thoracic Radiograph (3 Views)' : 'Abdominal Radiograph (2 Views)';
     const orderUID = `uid-${Date.now()}`;
 
     const newOrder = {
@@ -582,16 +630,23 @@ class VetPMSMedicalRecords {
       patientSpecies: p.species,
       patientBreed: p.breed,
       studyType,
-      status: "ORDERED",
-      dicomImageURL: p.species === "Canine" ? "canine_thorax" : "feline_abdomen",
-      timestamp: new Date().toLocaleString()
+      status: 'ORDERED',
+      dicomImageURL: p.species === 'Canine' ? 'canine_thorax' : 'feline_abdomen',
+      timestamp: new Date().toLocaleString(),
     };
 
     window.vetApp.state.imagingOrders.push(newOrder);
-    p.invoices.push({ item: `Diagnostic Imaging: ${studyType}`, price: 195.00, category: "Diagnostic Fee" });
+    p.invoices.push({
+      item: `Diagnostic Imaging: ${studyType}`,
+      price: 195.0,
+      category: 'Diagnostic Fee',
+    });
 
-    window.vetApp.showToast(`X-Ray Study order (C-FIND MWL) issued for <b>${p.name}</b>`, "imaging");
-    p.status = "Diagnostics";
+    window.vetApp.showToast(
+      `X-Ray Study order (C-FIND MWL) issued for <b>${p.name}</b>`,
+      'imaging'
+    );
+    p.status = 'Diagnostics';
     this.render();
   }
 
@@ -599,7 +654,7 @@ class VetPMSMedicalRecords {
     const p = window.vetApp.getActivePatient();
     if (!p) return;
 
-    const panelName = "IDEXX VetTest Chemistry Panel (Chem17)";
+    const panelName = 'IDEXX VetTest Chemistry Panel (Chem17)';
     const orderUID = `lab-${Date.now()}`;
 
     const newOrder = {
@@ -608,15 +663,22 @@ class VetPMSMedicalRecords {
       patientName: p.name,
       patientSpecies: p.species,
       panelName,
-      status: "ORDERED",
-      timestamp: new Date().toLocaleString()
+      status: 'ORDERED',
+      timestamp: new Date().toLocaleString(),
     };
 
     window.vetApp.state.labOrders.push(newOrder);
-    p.invoices.push({ item: `Laboratory panel: ${panelName}`, price: 165.00, category: "Diagnostic Fee" });
+    p.invoices.push({
+      item: `Laboratory panel: ${panelName}`,
+      price: 165.0,
+      category: 'Diagnostic Fee',
+    });
 
-    window.vetApp.showToast(`Biochemical laboratory order sent to IDEXX analyzer for <b>${p.name}</b>`, "lab");
-    p.status = "Diagnostics";
+    window.vetApp.showToast(
+      `Biochemical laboratory order sent to IDEXX analyzer for <b>${p.name}</b>`,
+      'lab'
+    );
+    p.status = 'Diagnostics';
     this.render();
   }
 
@@ -631,13 +693,14 @@ class VetPMSMedicalRecords {
 
   // Opens Rabies Certificate Modal visualizer
   openRabiesCertificate(patient) {
-    const modal = document.getElementById("modal-rabies-certificate");
-    const container = document.getElementById("rabies-modal-content");
+    const modal = document.getElementById('modal-rabies-certificate');
+    const container = document.getElementById('rabies-modal-content');
 
     const w = window.vetApp.getLatestWeight(patient.id).kg;
-    const certNum = `RAB-${new Date().getFullYear()}-${Math.floor(1000 + Math.random()*9000)}`;
+    const certNum = `RAB-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-    const site = patient.species === "Feline" ? "Right Hind Limb SQ (AAFP Guideline)" : "Right Shoulder SQ";
+    const site =
+      patient.species === 'Feline' ? 'Right Hind Limb SQ (AAFP Guideline)' : 'Right Shoulder SQ';
 
     // HTML5 standard Rabies visual mapping (Form 51 printable)
     container.innerHTML = `
@@ -690,13 +753,13 @@ class VetPMSMedicalRecords {
         </div>
 
         <div style="display:flex; justify-content:between; align-items:center; border-top:1px solid #000; margin-top:16px; padding-top:10px; font-size:9px; color:#4b5563;">
-          <span>* Implanted Microchip Verification Code: ${patient.microchips.length > 0 ? patient.microchips[0].chipId : "NONE DETECTED (Implant Required)"}</span>
+          <span>* Implanted Microchip Verification Code: ${patient.microchips.length > 0 ? patient.microchips[0].chipId : 'NONE DETECTED (Implant Required)'}</span>
           <span style="font-weight:bold;">QR AUTHENTICITY CODE: SECURE_FORM51_${certNum}</span>
         </div>
       </div>
     `;
 
-    modal.style.display = "flex";
+    modal.style.display = 'flex';
   }
 }
 

@@ -4,26 +4,26 @@
 class VetPMSWhiteboard {
   constructor() {
     this.columns = [
-      { id: "Checked In", label: "Checked In", color: "var(--success)" },
-      { id: "Triage/Vitals", label: "Triage / Vitals", color: "var(--warning)" },
-      { id: "Ward / Hospitalized", label: "Ward / Hospitalized", color: "var(--primary)" },
-      { id: "Diagnostics", label: "Diagnostics (Labs/PACS)", color: "var(--purple)" },
-      { id: "Surgery", label: "Surgery & Anesthesia", color: "var(--danger)" },
-      { id: "Recovery", label: "Recovery / ICU", color: "var(--info)" },
-      { id: "Discharge Ready", label: "Discharge Ready", color: "var(--success)" }
+      { id: 'Checked In', label: 'Checked In', color: 'var(--success)' },
+      { id: 'Triage/Vitals', label: 'Triage / Vitals', color: 'var(--warning)' },
+      { id: 'Ward / Hospitalized', label: 'Ward / Hospitalized', color: 'var(--primary)' },
+      { id: 'Diagnostics', label: 'Diagnostics (Labs/PACS)', color: 'var(--purple)' },
+      { id: 'Surgery', label: 'Surgery & Anesthesia', color: 'var(--danger)' },
+      { id: 'Recovery', label: 'Recovery / ICU', color: 'var(--info)' },
+      { id: 'Discharge Ready', label: 'Discharge Ready', color: 'var(--success)' },
     ];
 
-    this.gridContainer = document.getElementById("whiteboard-grid");
+    this.gridContainer = document.getElementById('whiteboard-grid');
     this.injectCPRModalToDOM();
   }
 
   // Inject a secure CPR modal to avoid modifying index.html structures directly
   injectCPRModalToDOM() {
-    if (document.getElementById("modal-cpr-dosing")) return;
+    if (document.getElementById('modal-cpr-dosing')) return;
 
-    const modal = document.createElement("dialog");
-    modal.className = "modal-overlay";
-    modal.id = "modal-cpr-dosing";
+    const modal = document.createElement('dialog');
+    modal.className = 'modal-overlay';
+    modal.id = 'modal-cpr-dosing';
     modal.innerHTML = `
       <div class="modal-card glass-card" style="max-width: 600px; border-color: var(--danger);">
         <header class="modal-header" style="border-bottom-color: rgba(239, 68, 68, 0.3);">
@@ -39,24 +39,24 @@ class VetPMSWhiteboard {
     `;
     document.body.appendChild(modal);
 
-    document.getElementById("btn-close-cpr-modal").addEventListener("click", () => {
-      modal.style.display = "none";
+    document.getElementById('btn-close-cpr-modal').addEventListener('click', () => {
+      modal.style.display = 'none';
       if (this.metronomeInterval) clearInterval(this.metronomeInterval);
     });
   }
 
   render() {
     if (!this.gridContainer) return;
-    this.gridContainer.innerHTML = "";
+    this.gridContainer.innerHTML = '';
 
     const patients = window.vetApp.patients;
 
-    this.columns.forEach(col => {
-      const colEl = document.createElement("div");
-      colEl.className = "flow-column glass";
-      colEl.id = `col-${col.id.replace(/\s+/g, "")}`;
-      
-      const colPatients = patients.filter(p => p.status === col.id);
+    this.columns.forEach((col) => {
+      const colEl = document.createElement('div');
+      colEl.className = 'flow-column glass';
+      colEl.id = `col-${col.id.replace(/\s+/g, '')}`;
+
+      const colPatients = patients.filter((p) => p.status === col.id);
 
       colEl.innerHTML = `
         <div class="column-header">
@@ -68,30 +68,30 @@ class VetPMSWhiteboard {
         </div>
       `;
 
-      const cardsContainer = colEl.querySelector(".column-cards-container");
+      const cardsContainer = colEl.querySelector('.column-cards-container');
 
-      colPatients.forEach(patient => {
-        const card = document.createElement("div");
-        card.className = "glass-card patient-card";
+      colPatients.forEach((patient) => {
+        const card = document.createElement('div');
+        card.className = 'glass-card patient-card';
         card.draggable = true;
         card.id = `card-${patient.id}`;
-        
-        let triageClass = "triage-standard";
-        if (patient.triage === "Urgent") triageClass = "triage-urgent";
-        if (patient.triage === "Critical") triageClass = "triage-critical";
+
+        let triageClass = 'triage-standard';
+        if (patient.triage === 'Urgent') triageClass = 'triage-urgent';
+        if (patient.triage === 'Critical') triageClass = 'triage-critical';
 
         // Vitals details
         const v = patient.vitals;
 
         // Warnings badge
-        let warningsHTML = "";
+        let warningsHTML = '';
         if (patient.warnings && patient.warnings.length > 0) {
           warningsHTML = `<span class="warning-badge" style="font-size:9px;">${patient.warnings[0]}</span>`;
         }
 
         // Location & CPR Quick Actions
-        let cprActionHTML = "";
-        if (patient.triage === "Critical") {
+        let cprActionHTML = '';
+        if (patient.triage === 'Critical') {
           cprActionHTML = `
             <button class="btn btn-purple" class="btn-cpr-trigger" style="background:var(--danger); font-size:10px; padding:4px 8px; margin-top:4px; font-weight:700; width:100%; justify-content:center;" data-patient-id="${patient.id}">
               🚨 RECOVER CPR Crash Chart
@@ -118,58 +118,58 @@ class VetPMSWhiteboard {
           <div class="card-vital-row" style="margin-top:4px;">
             <div class="vital-tag">T: <span class="vital-value">${v.temp}°C</span></div>
             <div class="vital-tag">HR: <span class="vital-value">${v.hr}</span></div>
-            <div class="vital-tag">BCS: <span class="vital-value">${v.bcs.split(" ")[0]}</span></div>
+            <div class="vital-tag">BCS: <span class="vital-value">${v.bcs.split(' ')[0]}</span></div>
           </div>
           ${cprActionHTML}
         `;
 
         // Click routing card (bypass if clicking the CPR button or dragging)
-        card.addEventListener("click", (e) => {
-          if (e.target.closest("button")) {
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('button')) {
             e.stopPropagation();
             this.openCPRModal(patient.id);
             return;
           }
           window.vetApp.activePatientId = patient.id;
-          window.vetApp.switchView("ehr");
+          window.vetApp.switchView('ehr');
         });
 
         // HTML5 drag start
-        card.addEventListener("dragstart", (e) => {
-          card.classList.add("dragging");
-          e.dataTransfer.setData("text/plain", patient.id);
+        card.addEventListener('dragstart', (e) => {
+          card.classList.add('dragging');
+          e.dataTransfer.setData('text/plain', patient.id);
         });
 
-        card.addEventListener("dragend", () => {
-          card.classList.remove("dragging");
+        card.addEventListener('dragend', () => {
+          card.classList.remove('dragging');
         });
 
         cardsContainer.appendChild(card);
       });
 
       // Whiteboard Column drag events
-      cardsContainer.addEventListener("dragover", (e) => {
+      cardsContainer.addEventListener('dragover', (e) => {
         e.preventDefault();
-        colEl.classList.add("drag-over");
+        colEl.classList.add('drag-over');
       });
 
-      cardsContainer.addEventListener("dragleave", () => {
-        colEl.classList.remove("drag-over");
+      cardsContainer.addEventListener('dragleave', () => {
+        colEl.classList.remove('drag-over');
       });
 
-      cardsContainer.addEventListener("drop", (e) => {
+      cardsContainer.addEventListener('drop', (e) => {
         e.preventDefault();
-        colEl.classList.remove("drag-over");
-        const patientId = e.dataTransfer.getData("text/plain");
-        const newStatus = cardsContainer.getAttribute("data-column-id");
-        
+        colEl.classList.remove('drag-over');
+        const patientId = e.dataTransfer.getData('text/plain');
+        const newStatus = cardsContainer.getAttribute('data-column-id');
+
         const p = window.vetApp.getPatient(patientId);
         if (p && p.status !== newStatus) {
           p.status = newStatus;
-          
+
           window.vetApp.showToast(
             `Patient <b>${p.name}</b> moved to <b>${newStatus}</b>`,
-            newStatus === "Surgery" ? "danger" : (newStatus === "Diagnostics" ? "imaging" : "success")
+            newStatus === 'Surgery' ? 'danger' : newStatus === 'Diagnostics' ? 'imaging' : 'success'
           );
           this.render();
         }
@@ -184,8 +184,8 @@ class VetPMSWhiteboard {
     const p = window.vetApp.getPatient(patientId);
     if (!p) return;
 
-    const modal = document.getElementById("modal-cpr-dosing");
-    const container = document.getElementById("cpr-modal-content");
+    const modal = document.getElementById('modal-cpr-dosing');
+    const container = document.getElementById('cpr-modal-content');
 
     // Dynamic weight pull
     const weight = window.vetApp.getLatestWeight(p.id).kg;
@@ -255,32 +255,32 @@ class VetPMSWhiteboard {
       </div>
     `;
 
-    modal.style.display = "flex";
+    modal.style.display = 'flex';
 
     // Setup live visual metronome interval
-    const light = document.getElementById("cpr-metronome-light");
-    const mBtn = document.getElementById("btn-toggle-metronome");
+    const light = document.getElementById('cpr-metronome-light');
+    const mBtn = document.getElementById('btn-toggle-metronome');
     let active = false;
 
-    mBtn.addEventListener("click", () => {
+    mBtn.addEventListener('click', () => {
       active = !active;
       if (active) {
-        mBtn.innerText = "STOP BEAT";
-        mBtn.style.background = "var(--primary)";
+        mBtn.innerText = 'STOP BEAT';
+        mBtn.style.background = 'var(--primary)';
         // 110 beats per minute -> 545ms interval
         this.metronomeInterval = setInterval(() => {
-          light.style.backgroundColor = "var(--danger)";
-          light.style.boxShadow = "0 0 10px var(--danger)";
+          light.style.backgroundColor = 'var(--danger)';
+          light.style.boxShadow = '0 0 10px var(--danger)';
           setTimeout(() => {
-            light.style.backgroundColor = "rgba(0,0,0,0.3)";
-            light.style.boxShadow = "none";
+            light.style.backgroundColor = 'rgba(0,0,0,0.3)';
+            light.style.boxShadow = 'none';
           }, 80);
         }, 545);
       } else {
-        mBtn.innerText = "START BEAT";
-        mBtn.style.background = "var(--danger)";
+        mBtn.innerText = 'START BEAT';
+        mBtn.style.background = 'var(--danger)';
         if (this.metronomeInterval) clearInterval(this.metronomeInterval);
-        light.style.backgroundColor = "var(--text-muted)";
+        light.style.backgroundColor = 'var(--text-muted)';
       }
     });
   }

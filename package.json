@@ -1,0 +1,32 @@
+{
+  "name": "vetpms",
+  "version": "1.0.0",
+  "description": "Veterinary Practice Management System Workstation",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.8",
+    "jsdom": "^25.0.1",
+    "eslint": "^9.16.0",
+    "prettier": "^3.4.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.11"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{html,css,json,md}": [
+      "prettier --write"
+    ]
+  }
+}

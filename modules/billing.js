@@ -3,20 +3,20 @@
 
 class VetPMSBilling {
   constructor() {
-    this.patientMeta = document.getElementById("billing-patient-meta");
-    this.invoiceBox = document.getElementById("billing-invoice-box");
-    
+    this.patientMeta = document.getElementById('billing-patient-meta');
+    this.invoiceBox = document.getElementById('billing-invoice-box');
+
     // Actions
-    this.claimBtn = document.getElementById("btn-submit-insurance-claim");
-    this.payBtn = document.getElementById("btn-trigger-payment-terminal");
-    this.actionButtons = document.getElementById("billing-action-buttons");
+    this.claimBtn = document.getElementById('btn-submit-insurance-claim');
+    this.payBtn = document.getElementById('btn-trigger-payment-terminal');
+    this.actionButtons = document.getElementById('billing-action-buttons');
 
     // Integrations UI
-    this.terminalDisplay = document.getElementById("billing-terminal-display");
-    this.terminalLight = document.getElementById("terminal-light");
-    this.terminalStatusText = document.getElementById("terminal-status-text");
-    this.terminalSubText = document.getElementById("terminal-sub-text");
-    this.claimsRegistryList = document.getElementById("billing-claims-list");
+    this.terminalDisplay = document.getElementById('billing-terminal-display');
+    this.terminalLight = document.getElementById('terminal-light');
+    this.terminalStatusText = document.getElementById('terminal-status-text');
+    this.terminalSubText = document.getElementById('terminal-sub-text');
+    this.claimsRegistryList = document.getElementById('billing-claims-list');
 
     this.activePatientId = null;
     this.totalBalanceDue = 0.0;
@@ -32,17 +32,17 @@ class VetPMSBilling {
   // Inject a secure Missed-Charge Capture reconciliation panel above the active checkout invoice
   injectMissedChargePanel() {
     const parent = this.invoiceBox;
-    if (!parent || document.getElementById("missed-charge-panel")) return;
+    if (!parent || document.getElementById('missed-charge-panel')) return;
 
-    const panel = document.createElement("div");
-    panel.id = "missed-charge-panel";
-    panel.style = "display:none; margin-bottom: 16px;";
+    const panel = document.createElement('div');
+    panel.id = 'missed-charge-panel';
+    panel.style = 'display:none; margin-bottom: 16px;';
     parent.parentNode.insertBefore(panel, parent);
   }
 
   initEventListeners() {
-    this.claimBtn.addEventListener("click", () => this.submitInsuranceClaim());
-    this.payBtn.addEventListener("click", () => this.processTerminalPayment());
+    this.claimBtn.addEventListener('click', () => this.submitInsuranceClaim());
+    this.payBtn.addEventListener('click', () => this.processTerminalPayment());
   }
 
   render() {
@@ -56,56 +56,68 @@ class VetPMSBilling {
   // Compares documented clinical care (SOAP notes, DEA logs, dental) against the current invoice
   reconcileMissedCharges() {
     const p = window.vetApp.getPatient(this.activePatientId);
-    const panel = document.getElementById("missed-charge-panel");
-    
+    const panel = document.getElementById('missed-charge-panel');
+
     if (!p || !panel) {
-      if (panel) panel.style.display = "none";
+      if (panel) panel.style.display = 'none';
       return;
     }
 
     this.missedCharges = [];
 
     // Check 1: Did we draw a DEA drug in substances.js but omit it from invoices?
-    const deaLogs = window.vetApp.state.auditLogs.filter(l => l.patientId === p.id || (l.patientId === undefined && l.patientName.toLowerCase() === p.name.toLowerCase()));
-    deaLogs.forEach(log => {
-      const drugBase = log.drugName.split(" ")[0];
-      const isInvoiced = p.invoices.some(inv => inv.item.includes(drugBase));
+    const deaLogs = window.vetApp.state.auditLogs.filter(
+      (l) =>
+        l.patientId === p.id ||
+        (l.patientId === undefined && l.patientName.toLowerCase() === p.name.toLowerCase())
+    );
+    deaLogs.forEach((log) => {
+      const drugBase = log.drugName.split(' ')[0];
+      const isInvoiced = p.invoices.some((inv) => inv.item.includes(drugBase));
       if (!isInvoiced) {
         this.missedCharges.push({
           item: `Controlled Med: ${drugBase} Injection (${log.amount}mL)`,
           price: parseFloat((log.amount * 18.0 + 15.0).toFixed(2)),
-          category: "Pharmacy Fee",
-          reason: "Documented in DEA vault ledger but omitted from invoice"
+          category: 'Pharmacy Fee',
+          reason: 'Documented in DEA vault ledger but omitted from invoice',
         });
       }
     });
 
     // Check 2: Did we write an X-Ray study plan in SOAP but omit it from invoices?
-    const hasXrayInSOAP = p.soap.plan.toLowerCase().includes("radiograph") || p.soap.plan.toLowerCase().includes("x-ray");
-    const isXrayInvoiced = p.invoices.some(inv => inv.item.includes("Imaging") || inv.item.includes("Radiograph"));
+    const hasXrayInSOAP =
+      p.soap.plan.toLowerCase().includes('radiograph') ||
+      p.soap.plan.toLowerCase().includes('x-ray');
+    const isXrayInvoiced = p.invoices.some(
+      (inv) => inv.item.includes('Imaging') || inv.item.includes('Radiograph')
+    );
     if (hasXrayInSOAP && !isXrayInvoiced) {
       this.missedCharges.push({
         item: `Diagnostic Imaging: Thoracic/Abdominal Radiographs`,
-        price: 195.00,
-        category: "Diagnostic Fee",
-        reason: "Ordered in SOAP Medical Plan notes but unbilled"
+        price: 195.0,
+        category: 'Diagnostic Fee',
+        reason: 'Ordered in SOAP Medical Plan notes but unbilled',
       });
     }
 
     // Render alert panel if leakage detected
     if (this.missedCharges.length > 0) {
-      panel.style.display = "block";
+      panel.style.display = 'block';
       panel.innerHTML = `
         <div class="glass-card" style="border-color: var(--danger); background: rgba(239, 68, 68, 0.08); padding: 12px; display:flex; flex-direction:column; gap:8px;">
           <span style="font-weight:800; color:var(--danger); font-size:12px; display:flex; align-items:center; gap:6px;">
             ⚠️ MISSED REVENUE DETECTED: UNINVOICED CLINICAL CHARGES (${this.missedCharges.length})
           </span>
           <div style="font-size:11px; color:var(--text-secondary); display:flex; flex-direction:column; gap:4px;">
-            ${this.missedCharges.map(m => `
+            ${this.missedCharges
+              .map(
+                (m) => `
               <div style="display:flex; justify-content:between; border-bottom:1px solid rgba(255,255,255,0.02); padding-bottom:4px;">
                 <span>• <b>${m.item}</b> ($${m.price.toFixed(2)})<br><span style="color:var(--text-muted); font-size:10px;">Reason: ${m.reason}</span></span>
               </div>
-            `).join("")}
+            `
+              )
+              .join('')}
           </div>
           <button class="btn" style="background:var(--danger); font-size:11px; padding:6px 12px; justify-content:center; margin-top:4px;" id="btn-auto-capture">
             ✓ Auto-Capture Leaked Charges ($${this.missedCharges.reduce((acc, c) => acc + c.price, 0).toFixed(2)})
@@ -113,22 +125,26 @@ class VetPMSBilling {
         </div>
       `;
 
-      document.getElementById("btn-auto-capture").onclick = () => this.handleAutoCaptureLeakedRevenue(p);
+      document.getElementById('btn-auto-capture').onclick = () =>
+        this.handleAutoCaptureLeakedRevenue(p);
     } else {
-      panel.style.display = "none";
+      panel.style.display = 'none';
     }
   }
 
   handleAutoCaptureLeakedRevenue(patient) {
-    this.missedCharges.forEach(c => {
+    this.missedCharges.forEach((c) => {
       patient.invoices.push({
         item: c.item,
         price: c.price,
-        category: c.category
+        category: c.category,
       });
     });
 
-    window.vetApp.showToast(`Revenue Secured! ${this.missedCharges.length} charges captured to active invoice.`, "success");
+    window.vetApp.showToast(
+      `Revenue Secured! ${this.missedCharges.length} charges captured to active invoice.`,
+      'success'
+    );
     this.missedCharges = [];
     this.render();
   }
@@ -139,8 +155,8 @@ class VetPMSBilling {
     const p = window.vetApp.getPatient(this.activePatientId);
     if (!p) {
       this.invoiceBox.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:12px; padding:20px;">No patient invoice loaded.</div>`;
-      this.claimBtn.style.display = "none";
-      this.payBtn.style.display = "none";
+      this.claimBtn.style.display = 'none';
+      this.payBtn.style.display = 'none';
       return;
     }
 
@@ -149,23 +165,23 @@ class VetPMSBilling {
     `;
 
     this.invoiceItems = [...p.invoices];
-    
+
     if (this.invoiceItems.length === 0) {
       this.invoiceBox.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:12px; padding:20px;">No charges recorded on ${p.name}'s clinical record.</div>`;
-      this.claimBtn.style.display = "none";
-      this.payBtn.style.display = "none";
+      this.claimBtn.style.display = 'none';
+      this.payBtn.style.display = 'none';
       return;
     }
 
     let subtotal = 0.0;
-    let itemsHTML = "";
+    let itemsHTML = '';
 
     // VMGA Chart of Accounts Category aggregates
     const vmgaSummary = {};
 
-    this.invoiceItems.forEach(item => {
+    this.invoiceItems.forEach((item) => {
       subtotal += item.price;
-      const cat = item.category || "Professional Service";
+      const cat = item.category || 'Professional Service';
       vmgaSummary[cat] = (vmgaSummary[cat] || 0) + item.price;
 
       let categoryBadge = `<span style="font-size:9px; background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:4px; color:var(--text-muted);">${cat}</span>`;
@@ -186,12 +202,16 @@ class VetPMSBilling {
 
     // ProSal split calculation: DVM gets 20% production of Professional services, diagnostics, and surgical dental fees
     let proSalEligible = 0.0;
-    this.invoiceItems.forEach(item => {
-      if (item.category === "Professional Service" || item.category === "Diagnostic Fee" || item.category === "Dental Fee") {
+    this.invoiceItems.forEach((item) => {
+      if (
+        item.category === 'Professional Service' ||
+        item.category === 'Diagnostic Fee' ||
+        item.category === 'Dental Fee'
+      ) {
         proSalEligible += item.price;
       }
     });
-    const dvmProduction = proSalEligible * 0.20;
+    const dvmProduction = proSalEligible * 0.2;
 
     // Render invoice summary including VMGA Chart mappings and ProSal dividends
     this.invoiceBox.innerHTML = `
@@ -203,9 +223,13 @@ class VetPMSBilling {
       <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:8px; font-size:11px; margin-bottom:12px; border:1px solid var(--glass-border);">
         <span style="font-weight:700; color:var(--info); display:block; margin-bottom:4px;">AAHA / VMGA Chart of Accounts Mapping</span>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; color:var(--text-secondary);">
-          ${Object.keys(vmgaSummary).map(k => `
+          ${Object.keys(vmgaSummary)
+            .map(
+              (k) => `
             <span>${k}: <b>$${vmgaSummary[k].toFixed(2)}</b></span>
-          `).join("")}
+          `
+            )
+            .join('')}
         </div>
       </div>
 
@@ -231,17 +255,17 @@ class VetPMSBilling {
       </div>
     `;
 
-    this.claimBtn.style.display = "block";
-    this.payBtn.style.display = "block";
-    
+    this.claimBtn.style.display = 'block';
+    this.payBtn.style.display = 'block';
+
     if (this.isClaimSubmitted) {
-      this.claimBtn.innerText = "Trupanion Claim Processed";
+      this.claimBtn.innerText = 'Trupanion Claim Processed';
       this.claimBtn.disabled = true;
-      this.claimBtn.classList.add("btn-secondary");
+      this.claimBtn.classList.add('btn-secondary');
     } else {
-      this.claimBtn.innerText = "Submit Direct Trupanion Claim";
+      this.claimBtn.innerText = 'Submit Direct Trupanion Claim';
       this.claimBtn.disabled = false;
-      this.claimBtn.classList.remove("btn-secondary");
+      this.claimBtn.classList.remove('btn-secondary');
     }
   }
 
@@ -249,24 +273,25 @@ class VetPMSBilling {
     const p = window.vetApp.getPatient(this.activePatientId);
     if (!p) return;
 
-    this.claimBtn.innerText = "Processing Claim...";
+    this.claimBtn.innerText = 'Processing Claim...';
     this.claimBtn.disabled = true;
 
-    window.vetApp.showToast("Contacting Trupanion Direct Pay Gateway...", "info");
+    window.vetApp.showToast('Contacting Trupanion Direct Pay Gateway...', 'info');
 
     setTimeout(() => {
       let eligibleSubtotal = 0.0;
-      this.invoiceItems.forEach(item => {
-        if (item.category === "Diagnostic Fee" || item.category === "Dental Fee") {
+      this.invoiceItems.forEach((item) => {
+        if (item.category === 'Diagnostic Fee' || item.category === 'Dental Fee') {
           eligibleSubtotal += item.price;
         }
       });
 
-      const deductible = p.name === "Oliver" ? 50.00 : 0.00;
+      const deductible = p.name === 'Oliver' ? 50.0 : 0.0;
       const eligibleAfterDeductible = Math.max(0, eligibleSubtotal - deductible);
-      
-      const insurancePayout = eligibleAfterDeductible * 0.90;
-      const clientCopay = (eligibleAfterDeductible * 0.10) + deductible + (this.totalBalanceDue - eligibleSubtotal);
+
+      const insurancePayout = eligibleAfterDeductible * 0.9;
+      const clientCopay =
+        eligibleAfterDeductible * 0.1 + deductible + (this.totalBalanceDue - eligibleSubtotal);
 
       const claimsPayload = {
         claimId: `clm-${Date.now().toString().substring(8)}`,
@@ -274,8 +299,8 @@ class VetPMSBilling {
         totalCharges: this.totalBalanceDue,
         insurancePaid: insurancePayout,
         clientOwes: clientCopay,
-        status: "APPROVED",
-        timestamp: new Date().toLocaleTimeString()
+        status: 'APPROVED',
+        timestamp: new Date().toLocaleTimeString(),
       };
 
       window.vetApp.state.claims.push(claimsPayload);
@@ -284,10 +309,13 @@ class VetPMSBilling {
       p.invoices.push({
         item: `➖ Trupanion Direct Pay Cover (90% Eligible)`,
         price: -insurancePayout,
-        category: "Insurance Credit"
+        category: 'Insurance Credit',
       });
-      
-      window.vetApp.showToast(`Trupanion claim approved! <b>$${insurancePayout.toFixed(2)}</b> sent directly to clinic.`, "success");
+
+      window.vetApp.showToast(
+        `Trupanion claim approved! <b>$${insurancePayout.toFixed(2)}</b> sent directly to clinic.`,
+        'success'
+      );
       this.render();
     }, 2000);
   }
@@ -296,30 +324,30 @@ class VetPMSBilling {
     const p = window.vetApp.getPatient(this.activePatientId);
     if (!p) return;
 
-    this.payBtn.innerText = "Awaiting Terminal Tap...";
+    this.payBtn.innerText = 'Awaiting Terminal Tap...';
     this.payBtn.disabled = true;
 
-    this.terminalLight.style.backgroundColor = "var(--warning)";
-    this.terminalLight.style.animation = "blink 0.5s infinite alternate";
-    this.terminalStatusText.innerText = "SWIPE / TAP CARD";
-    this.terminalStatusText.style.color = "var(--warning)";
+    this.terminalLight.style.backgroundColor = 'var(--warning)';
+    this.terminalLight.style.animation = 'blink 0.5s infinite alternate';
+    this.terminalStatusText.innerText = 'SWIPE / TAP CARD';
+    this.terminalStatusText.style.color = 'var(--warning)';
     this.terminalSubText.innerHTML = `
       Amount Due: <b style="font-size:16px; color:#fff;">$${this.totalBalanceDue.toFixed(2)}</b><br><br>
       <button class="btn" style="padding:4px 10px; font-size:11px;" id="btn-simulate-card-tap">Simulate Card Tap</button>
     `;
 
-    document.getElementById("btn-simulate-card-tap").addEventListener("click", () => {
+    document.getElementById('btn-simulate-card-tap').addEventListener('click', () => {
       this.completeTerminalTransaction(p);
     });
   }
 
   completeTerminalTransaction(patient) {
-    this.terminalLight.style.backgroundColor = "var(--success)";
-    this.terminalLight.style.animation = "none";
-    this.terminalStatusText.innerText = "TRANSACTION APPROVED";
-    this.terminalStatusText.style.color = "var(--success)";
-    
-    const txnId = `txn_${Math.floor(Math.random()*100000000)}`;
+    this.terminalLight.style.backgroundColor = 'var(--success)';
+    this.terminalLight.style.animation = 'none';
+    this.terminalStatusText.innerText = 'TRANSACTION APPROVED';
+    this.terminalStatusText.style.color = 'var(--success)';
+
+    const txnId = `txn_${Math.floor(Math.random() * 100000000)}`;
     this.terminalSubText.innerHTML = `
       Auth Code: <b>992110</b><br>
       Ref ID: <b>${txnId}</b><br>
@@ -328,11 +356,14 @@ class VetPMSBilling {
     `;
 
     patient.invoices = [];
-    patient.status = "Checked Out";
+    patient.status = 'Checked Out';
 
-    window.vetApp.showToast(`Invoice cleared. Patient <b>${patient.name}</b> successfully discharged.`, "success");
+    window.vetApp.showToast(
+      `Invoice cleared. Patient <b>${patient.name}</b> successfully discharged.`,
+      'success'
+    );
 
-    this.payBtn.innerText = "Process Card Payment";
+    this.payBtn.innerText = 'Process Card Payment';
     this.payBtn.disabled = false;
     this.isClaimSubmitted = false;
 
@@ -341,7 +372,7 @@ class VetPMSBilling {
 
   renderClaimsList() {
     if (!this.claimsRegistryList) return;
-    this.claimsRegistryList.innerHTML = "";
+    this.claimsRegistryList.innerHTML = '';
 
     const claims = window.vetApp.state.claims;
 
@@ -352,7 +383,7 @@ class VetPMSBilling {
 
     const sortedClaims = [...claims].reverse();
 
-    sortedClaims.forEach(c => {
+    sortedClaims.forEach((c) => {
       this.claimsRegistryList.innerHTML += `
         <div class="claim-item">
           <div style="display:flex; flex-direction:column; gap:2px;">

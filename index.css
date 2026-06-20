@@ -8,31 +8,31 @@
   --glass-card-hover: rgba(55, 65, 81, 0.55);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-border-focus: rgba(99, 102, 241, 0.4);
-  
+
   /* Modern Palette */
-  --primary: #6366f1;         /* Indigo */
+  --primary: #6366f1; /* Indigo */
   --primary-hover: #4f46e5;
   --primary-glow: rgba(99, 102, 241, 0.3);
-  
-  --success: #10b981;         /* Emerald */
+
+  --success: #10b981; /* Emerald */
   --success-glow: rgba(16, 185, 129, 0.2);
-  
-  --warning: #f59e0b;         /* Amber */
+
+  --warning: #f59e0b; /* Amber */
   --warning-glow: rgba(245, 158, 11, 0.2);
-  
-  --danger: #ef4444;          /* Rose */
+
+  --danger: #ef4444; /* Rose */
   --danger-glow: rgba(239, 68, 68, 0.2);
-  
-  --info: #06b6d4;            /* Cyan */
+
+  --info: #06b6d4; /* Cyan */
   --info-glow: rgba(6, 182, 212, 0.2);
-  
-  --purple: #8b5cf6;          /* Violet for Diagnostics */
+
+  --purple: #8b5cf6; /* Violet for Diagnostics */
   --purple-glow: rgba(139, 92, 246, 0.2);
-  
+
   --text-primary: #f3f4f6;
   --text-secondary: #9ca3af;
   --text-muted: #6b7280;
-  
+
   --sidebar-width: 260px;
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
@@ -173,7 +173,8 @@ body {
   transition: var(--transition-smooth);
 }
 
-.nav-item:hover, .nav-item.active {
+.nav-item:hover,
+.nav-item.active {
   color: #fff;
   background: rgba(99, 102, 241, 0.15);
   border-left: 3px solid var(--primary);
@@ -186,7 +187,8 @@ body {
   transition: var(--transition-smooth);
 }
 
-.nav-item:hover svg, .nav-item.active svg {
+.nav-item:hover svg,
+.nav-item.active svg {
   filter: drop-shadow(0 0 5px var(--primary));
   color: var(--primary);
 }
@@ -307,8 +309,14 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Interactive Components & Whiteboard Grid */
@@ -398,9 +406,18 @@ body {
   border-radius: 50%;
 }
 
-.triage-critical { background-color: var(--danger); box-shadow: 0 0 8px var(--danger); }
-.triage-urgent { background-color: var(--warning); box-shadow: 0 0 8px var(--warning); }
-.triage-standard { background-color: var(--success); box-shadow: 0 0 8px var(--success); }
+.triage-critical {
+  background-color: var(--danger);
+  box-shadow: 0 0 8px var(--danger);
+}
+.triage-urgent {
+  background-color: var(--warning);
+  box-shadow: 0 0 8px var(--warning);
+}
+.triage-standard {
+  background-color: var(--success);
+  box-shadow: 0 0 8px var(--success);
+}
 
 .card-vital-row {
   display: flex;
@@ -698,10 +715,26 @@ body {
   padding: 16px;
 }
 
-.dicom-overlay.top-left { top: 0; left: 0; text-align: left; }
-.dicom-overlay.top-right { top: 0; right: 0; text-align: right; }
-.dicom-overlay.bottom-left { bottom: 0; left: 0; text-align: left; }
-.dicom-overlay.bottom-right { bottom: 0; right: 0; text-align: right; }
+.dicom-overlay.top-left {
+  top: 0;
+  left: 0;
+  text-align: left;
+}
+.dicom-overlay.top-right {
+  top: 0;
+  right: 0;
+  text-align: right;
+}
+.dicom-overlay.bottom-left {
+  bottom: 0;
+  left: 0;
+  text-align: left;
+}
+.dicom-overlay.bottom-right {
+  bottom: 0;
+  right: 0;
+  text-align: right;
+}
 
 .pacs-controls {
   display: flex;
@@ -720,7 +753,7 @@ body {
   color: var(--text-secondary);
 }
 
-.slider-group input[type="range"] {
+.slider-group input[type='range'] {
   width: 100%;
   accent-color: var(--purple);
   background: rgba(255, 255, 255, 0.1);
@@ -846,8 +879,14 @@ body {
 }
 
 @keyframes modalSlide {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .modal-header {
@@ -955,8 +994,12 @@ body {
 }
 
 @keyframes blink {
-  from { opacity: 0.3; }
-  to { opacity: 1; }
+  from {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Claims status list */
@@ -1001,6 +1044,12 @@ body {
 }
 
 @keyframes toastSlide {
-  from { transform: translateX(50px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+  from {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
